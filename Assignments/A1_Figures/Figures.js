@@ -1,14 +1,14 @@
 mat4 = glMatrix.mat4;
 
 // ModelView Matrix: defines where the square is positioned in the 3D coordinate system relative to the camera
-// Projection Matrix: required by the shader to convert the 3D space into the 2D space of the viewport. 
+// Projection Matrix: required by the shader to convert the 3D space into the 2D space of the viewport.
 var projectionMatrix, modelViewMatrix;
 
 // Attributes: Input variables used in the vertex shader. Since the vertex shader is called on each vertex, these will be different every time the vertex shader is invoked.
 // Uniforms: Input variables for both the vertex and fragment shaders. These are constant during a rendering cycle, such as lights position.
 // Varyings: Used for passing data from the vertex shader to the fragment shader.
 var vertexShaderSource =
-    
+
     "    attribute vec3 vertexPos;\n" +
     "    uniform mat4 modelViewMatrix;\n" +
     "    uniform mat4 projectionMatrix;\n" +
@@ -18,7 +18,7 @@ var vertexShaderSource =
     "            vec4(vertexPos, 1.0);\n" +
     "    }\n";
 
-var fragmentShaderSource = 
+var fragmentShaderSource =
     "    void main(void) {\n" +
     "    // Return the pixel color: always output white\n" +
     "    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n" +
@@ -27,19 +27,19 @@ var fragmentShaderSource =
 var shaderProgram, shaderVertexPositionAttribute, shaderProjectionMatrixUniform, shaderModelViewMatrixUniform;
 
 // Initializes the context for use with WebGL
-function initWebGL(canvas) 
+function initWebGL(canvas)
 {
 
     var gl = null;
     var msg = "Your browser does not support WebGL, or it is not enabled by default.";
 
-    try 
+    try
     {
         // The getContext method can take one of the following context id strings:
         // "2d" for a 2d canvas context, "webgl" for a WebGL context, or "experimental-webgl" to get a xontext for earlier-version browsers.
         // Use of "experimental-webgl" is recommended to get a context for all WebGL capable browsers.
         gl = canvas.getContext("experimental-webgl");
-    } 
+    }
     catch (e)
     {
         msg = "Error creating WebGL Context!: " + e.toString();
@@ -51,10 +51,10 @@ function initWebGL(canvas)
         throw new Error(msg);
     }
 
-    return gl;        
+    return gl;
 }
 
-// The viewport is the rectangular bounds of where to draw. 
+// The viewport is the rectangular bounds of where to draw.
 // In this case, the viewport will take up the entire contents of the canvas' display area.
 function initViewport(gl, canvas)
 {
@@ -79,13 +79,13 @@ function initShader(gl)
     // name     A domString specifying the name of the attribute variable whose location to get
     shaderVertexPositionAttribute = gl.getAttribLocation(shaderProgram, "vertexPos");
     gl.enableVertexAttribArray(shaderVertexPositionAttribute);
-    
+
     // gl.getUniformLocation(program, name);
     // program  A webgl program containing the attribute variable
     // name     A domString specifying the name of the uniform variable whose location to get
     shaderProjectionMatrixUniform = gl.getUniformLocation(shaderProgram, "projectionMatrix");
     shaderModelViewMatrixUniform = gl.getUniformLocation(shaderProgram, "modelViewMatrix");
-    
+
     if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
         alert("Could not initialise shaders");
     }
@@ -107,7 +107,7 @@ function initGL(gl, canvas)
     // a	mat4	the matrix to translate
     // v	vec3	vector to translate by
     mat4.identity(modelViewMatrix);
-
+    mat4.translate(modelViewMatrix, modelViewMatrix, [0, 0, -4]);
     // Create a project matrix with 45 degree field of view
     projectionMatrix = mat4.create();
     // perspective(out, fovy, aspect, near, far) → {mat4}
@@ -142,7 +142,7 @@ function createShader(gl, str, type)
     return shader;
 }
 
-function draw(gl, obj) 
+function draw(gl, obj)
 {
     // set the shader to use
     gl.useProgram(shaderProgram);
@@ -161,7 +161,7 @@ function draw(gl, obj)
     // offset: A GLintptr specifying an offset in bytes of the first component in the vertex attribute array
     gl.vertexAttribPointer(shaderVertexPositionAttribute, obj.vertSize, gl.FLOAT, false, 0, 0);
 
-    // WebGLRenderingContext.uniformMatrix4fv(location, transpose, value); 
+    // WebGLRenderingContext.uniformMatrix4fv(location, transpose, value);
     // location: A WebGLUniformLocation object containing the location of the uniform attribute to modify. The location is obtained using getAttribLocation().
     // transpose: A GLboolean specifying whether to transpose the matrix.
     // value: A Float32Array or sequence of GLfloat values.
@@ -173,26 +173,112 @@ function draw(gl, obj)
 }
 
 // TO DO: Create functions needed to generate the vertex data for the different figures.
-function createSquare(gl) 
+function createSquare(gl)
 {
     var square = {};
+    var vertexBuffer;
+    vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    var verts = [
+        1+.5,  1,  0.0,
+        1+.5, .6,  0.0,
+        .6+.5, 1, 0,
+        .6+.5,  .6,  0.0
+    ];
+    // void gl.bufferData(target, ArrayBufferView srcData, usage, srcOffset, length);
+    // target = gl.ARRAY_BUFFER: Buffer containing vertex attributes, such as vertex coordinates, texture coordinate data, or vertex color data.
+    // srcData = This is a new data type introduced into web browsers for use with WebGL. Float32Array is a type of ArrayBuffer, also known as a typed array. This is a JavaScript type that stores compact binary data.
+    // usage = A GLenum specifying the usage pattern of the data store. gl.STATIC_DRAW: Contents of the buffer are likely to be used often and not change often. Contents are written to the buffer, but not read.
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
+
+    // The resulting object contains the vertexbuffer, the size of the vertex structure (3 floats, x, y, z), the number of vertices to be drawn, the the primitive to draw.
+    var square = {buffer:vertexBuffer, vertSize:3, nVerts:4, primtype:gl.TRIANGLE_STRIP};
     return square;
 }
 
 function createTriangle(gl)
 {
-    var triangle = {};
-    return triangle;
+  var vertexBuffer;
+  vertexBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+  var verts = [
+      -1-.7,  -1.2+.4,  0.0,
+      -1-.7,  -.5+.4,  0.0,
+      .0-.7, -1+.4,  0.0,
+      // 0, -1, 0
+  ];
+  // void gl.bufferData(target, ArrayBufferView srcData, usage, srcOffset, length);
+  // target = gl.ARRAY_BUFFER: Buffer containing vertex attributes, such as vertex coordinates, texture coordinate data, or vertex color data.
+  // srcData = This is a new data type introduced into web browsers for use with WebGL. Float32Array is a type of ArrayBuffer, also known as a typed array. This is a JavaScript type that stores compact binary data.
+  // usage = A GLenum specifying the usage pattern of the data store. gl.STATIC_DRAW: Contents of the buffer are likely to be used often and not change often. Contents are written to the buffer, but not read.
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
+
+  // The resulting object contains the vertexbuffer, the size of the vertex structure (3 floats, x, y, z), the number of vertices to be drawn, the the primitive to draw.
+  var triangle = {buffer:vertexBuffer, vertSize:3, nVerts:3, primtype:gl.TRIANGLE_STRIP};
+  return triangle;
 }
 
 function createRhombus(gl)
 {
     var rhombus = {};
+    var vertexBuffer;
+    vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    var verts = [
+      .7+1,  -0.5,  0.0,
+      .25+1, -.25,  0.0,
+      .25+1, -.75, 0,
+      -.2+1,  -0.5,  0.0
+    ];
+    /*console.log(verts);
+    verts = [];
+    verts.push(.7);
+    verts.push(-.5);
+    verts.push(0);
+    verts.push(.25);
+    verts.push(-.25);
+    verts.push(0);
+    verts.push(.25);
+    verts.push(-.75);
+    verts.push(0);
+    verts.push(-.2);
+    verts.push(-.5);
+    verts.push(0);
+    console.log(verts);*/
+    // void gl.bufferData(target, ArrayBufferView srcData, usage, srcOffset, length);
+    // target = gl.ARRAY_BUFFER: Buffer containing vertex attributes, such as vertex coordinates, texture coordinate data, or vertex color data.
+    // srcData = This is a new data type introduced into web browsers for use with WebGL. Float32Array is a type of ArrayBuffer, also known as a typed array. This is a JavaScript type that stores compact binary data.
+    // usage = A GLenum specifying the usage pattern of the data store. gl.STATIC_DRAW: Contents of the buffer are likely to be used often and not change often. Contents are written to the buffer, but not read.
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
+
+    // The resulting object contains the vertexbuffer, the size of the vertex structure (3 floats, x, y, z), the number of vertices to be drawn, the the primitive to draw.
+    var rhombus = {buffer:vertexBuffer, vertSize:3, nVerts:4, primtype:gl.TRIANGLE_STRIP};
     return rhombus;
 }
 
 function createSphere(gl, radius)
 {
     var sphere = {};
+    var vertexBuffer;
+    vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+
+    var verts = [];
+    for (var i = 0; i < 360; i++) {                   //Create 360 points to make things easier
+      verts.push(Math.round(radius * Math.cos(i/360*2*Math.PI)*1000)/1000-1.2);   //Math.cos uses radians
+      verts.push(Math.round(radius * Math.sin(i/360*2*Math.PI)*1000)/1000+.8);
+      verts.push(0);
+    }
+    console.log(verts);
+
+    // void gl.bufferData(target, ArrayBufferView srcData, usage, srcOffset, length);
+    // target = gl.ARRAY_BUFFER: Buffer containing vertex attributes, such as vertex coordinates, texture coordinate data, or vertex color data.
+    // srcData = This is a new data type introduced into web browsers for use with WebGL. Float32Array is a type of ArrayBuffer, also known as a typed array. This is a JavaScript type that stores compact binary data.
+    // usage = A GLenum specifying the usage pattern of the data store. gl.STATIC_DRAW: Contents of the buffer are likely to be used often and not change often. Contents are written to the buffer, but not read.
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
+
+    // The resulting object contains the vertexbuffer, the size of the vertex structure (3 floats, x, y, z), the number of vertices to be drawn, the the primitive to draw.
+    var sphere = {buffer:vertexBuffer, vertSize:3, nVerts:360, primtype:gl.TRIANGLE_STRIP};
+
     return sphere;
-}        
+}

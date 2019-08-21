@@ -16,19 +16,23 @@
 	$(document).ready(
 			function() {
                 var canvas = document.getElementById("webglcanvas");
-                
+
                 var gl = initWebGL(canvas);
                 initGL(gl, canvas);
-		        initViewport(gl, canvas);
+		        		initViewport(gl, canvas);
                 initShader(gl);
+
 
                 var square = createSquare(gl);
                 var triangle = createTriangle(gl);
-                var sphere = createSphere(gl, 0.5);
+                var sphere = createSphere(gl, 0.3);
                 var rhombus = createRhombus(gl);
-                
+
                 // TO DO: Transform the different figure's positions, and draw them.
-                
+								draw(gl, square);
+								draw(gl, triangle);
+								draw(gl, sphere);
+								draw(gl, rhombus);
 			}
 	);
 </script>
@@ -41,4 +45,3 @@
 </body>
 
 </html>
-
