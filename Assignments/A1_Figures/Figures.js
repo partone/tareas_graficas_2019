@@ -1,3 +1,6 @@
+//Eric Parton
+//A01023503
+
 mat4 = glMatrix.mat4;
 
 // ModelView Matrix: defines where the square is positioned in the 3D coordinate system relative to the camera
@@ -202,7 +205,7 @@ function createTriangle(gl)
   vertexBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   var verts = [
-      -1-.7,  -1.2+.4,  0.0,
+      -1-.7,  -1.2+.4,  0.0,  //Three points
       -1-.7,  -.5+.4,  0.0,
       .0-.7, -1+.4,  0.0,
       // 0, -1, 0
@@ -225,7 +228,7 @@ function createRhombus(gl)
     vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     var verts = [
-      .7+1,  -0.5,  0.0,
+      .7+1,  -0.5,  0.0,  //Four points
       .25+1, -.25,  0.0,
       .25+1, -.75, 0,
       -.2+1,  -0.5,  0.0
@@ -265,15 +268,14 @@ function createSphere(gl, radius)
     verts = [];
     for (var i = 0; i < 360; i++) {                   //Create 360 points to make things easier
       verts.push(Math.round(radius * Math.cos(i/360*2*Math.PI)*1000)/1000-1.2);   //Math.cos uses radians
-      verts.push(Math.round(radius * Math.sin(i/360*2*Math.PI)*1000)/1000+.8);
+      verts.push(Math.round(radius * Math.sin(i/360*2*Math.PI)*1000)/1000+.8);    //The good old unit circle
       verts.push(0);
-      if(i % 3 === 0){
+      if(i % 3 === 0){  //Adds a point at the origin
         verts.push(-1.2);
         verts.push(.8);
         verts.push(0);
       }
     }
-    console.log(verts);
 
     // void gl.bufferData(target, ArrayBufferView srcData, usage, srcOffset, length);
     // target = gl.ARRAY_BUFFER: Buffer containing vertex attributes, such as vertex coordinates, texture coordinate data, or vertex color data.
@@ -282,7 +284,7 @@ function createSphere(gl, radius)
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
 
     // The resulting object contains the vertexbuffer, the size of the vertex structure (3 floats, x, y, z), the number of vertices to be drawn, the the primitive to draw.
-    var sphere = {buffer:vertexBuffer, vertSize:3, nVerts:360, primtype:gl.TRIANGLE_STRIP};
+    var sphere = {buffer:vertexBuffer, vertSize:3, nVerts:360, primtype:gl.TRIANGLE_STRIP}; //360 points, 360*(4/3) points would have been a full circle
 
     return sphere;
 }
