@@ -262,12 +262,16 @@ function createSphere(gl, radius)
     var vertexBuffer;
     vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-
-    var verts = [];
+    verts = [];
     for (var i = 0; i < 360; i++) {                   //Create 360 points to make things easier
       verts.push(Math.round(radius * Math.cos(i/360*2*Math.PI)*1000)/1000-1.2);   //Math.cos uses radians
       verts.push(Math.round(radius * Math.sin(i/360*2*Math.PI)*1000)/1000+.8);
       verts.push(0);
+      if(i % 3 === 0){
+        verts.push(-1.2);
+        verts.push(.8);
+        verts.push(0);
+      }
     }
     console.log(verts);
 
