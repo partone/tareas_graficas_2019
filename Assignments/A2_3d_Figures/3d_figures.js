@@ -297,7 +297,8 @@ function createOctahedron(gl, translation, rotationAxis){
           primtype:gl.TRIANGLES, modelViewMatrix: mat4.create(), currentTime : Date.now()};
 
   mat4.translate(octahedron.modelViewMatrix, octahedron.modelViewMatrix, translation);
-  var i = 0;
+  var i = 0
+  var limit = 145;
   octahedron.update = function()
   {
       var now = Date.now();
@@ -307,13 +308,13 @@ function createOctahedron(gl, translation, rotationAxis){
       var angle = Math.PI * 2 * fract;
 
       //When i is less than 30, it goes down.  Otherwise it goes up.  At 59 it resets
-      if(i < 40){
+      if(i < limit){
         mat4.translate(octahedron.modelViewMatrix, octahedron.modelViewMatrix, [0, -.05, 0]);
       } else {
         mat4.translate(octahedron.modelViewMatrix, octahedron.modelViewMatrix, [0, .05, 0]);
       }
       i++;
-      if (i > 79) {
+      if (i > limit*2-1) {
         i = 0;
       }
 
@@ -336,37 +337,37 @@ function createPentPyramid(gl, translation, rotationAxis){
 
   var verts = [
      //Bottom ( ͡° ͜ʖ ͡°)
-      1.0, -1.0, -1.0,
-      1.0,  1.0, -1.0,
+      1.0, -2.0, -1.0,
+      1.0,  2.0, -1.0,
       1.0,  1.0,  1.0,
       1.0, -1.0,  1.0,
       1.0, 0,  -2,
 
       //Sides
-      -1.0, 0.0,  0.0,
+      -2.0, 0.0,  0.0,
        1.0, -1.0,  1.0,
        1.0,  1.0,  1.0,
       1.0,  1.0,  1.0,
 
-      -1.0, 0.0, 0.0,
+      -2.0, 0.0, 0.0,
       -1.0,  0.0, 0.0,
        1.0,  0, -2.0,
-       1.0, -1.0, -1.0,
+       1.0, -2.0, -1.0,
 
-      -1.0,  0.0, 0.0,
+      -2.0,  0.0, 0.0,
       -1.0,  0.0,  0.0,
        1.0,  1.0,  1.0,
-       1.0,  1.0, -1.0,
+       1.0,  2.0, -1.0,
 
-      -1.0, 0.0, 0.0,
-       1.0, -1.0, -1.0,
+      -2.0, 0.0, 0.0,
+       1.0, -2.0, -1.0,
        1.0, -1.0,  1.0,
       -1.0, 0.0,  0.0,
 
-      -1.0, 0.0, 0.0,
+      -2.0, 0.0, 0.0,
       -1.0,  0.0, 0.0,
        1.0,  0, -2.0,
-       1.0, 1.0, -1.0,
+       1.0, 2.0, -1.0,
      ];
 
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
@@ -375,12 +376,11 @@ function createPentPyramid(gl, translation, rotationAxis){
   var colorBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
   var faceColors = [
-      [1.0, 0.0, 0.0, 1.0], // Front face
       [0.0, 1.0, 0.0, 1.0], // Back face
+      [0.0, 1.0, 1.0, 1.0], // Back face
       [0.0, 0.0, 1.0, 1.0], // Top face
+      [1.0, 0.0, 0.0, 1.0], // Bottom face
       [1.0, 1.0, 0.0, 1.0], // Bottom face
-      [1.0, 0.0, 1.0, 1.0], // Right face
-      [0.0, 1.0, 1.0, 1.0]  // Left face
   ];
 
   // Each vertex must have the color information, that is why the same color is concatenated 4 times, one for each vertex of the pyramid's face.
@@ -391,6 +391,9 @@ function createPentPyramid(gl, translation, rotationAxis){
   //     for (var j=0; j < 4; j++)
   //         vertexColors = vertexColors.concat(color);
   // }
+  //Pentagon face
+  for (var j=0; j < 5; j++)
+    vertexColors = vertexColors.concat([1.0, 0.0, 0.0, 1.0]);
   for (const color of faceColors)
   {
       for (var j=0; j < 4; j++)
@@ -419,7 +422,7 @@ function createPentPyramid(gl, translation, rotationAxis){
 
   var pyramid = {
           buffer:vertexBuffer, colorBuffer:colorBuffer, indices:pyramidIndexBuffer,
-          vertSize:3, nVerts:26, colorSize:4, nColors: 20, nIndices:48,
+          vertSize:3, nVerts:26, colorSize:4, nColors: 42, nIndices:48,
           primtype:gl.TRIANGLES, modelViewMatrix: mat4.create(), currentTime : Date.now()};
 
   mat4.translate(pyramid.modelViewMatrix, pyramid.modelViewMatrix, translation);
@@ -450,57 +453,58 @@ function createScutoid(gl, translation, rotationAxis){
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 
   var verts = [
-      //Sides
-     -1.0, -0.6,  1.5,
-      1.0, -0.6,  1.5,
-      1.0,  0.6,  1.5,
-     -1.0,  0.6,  1.5,
+     //Bottom ( ͡° ͜ʖ ͡°)  Pentagon
+      1.0, -2.0, -1.0,    //0
+      1.0,  2.0, -1.0,
+      1.0,  1.0,  1.0,
+      1.0, -1.0,  1.0,
+      1.0, 0,  -2,
 
-     -1.0, -0.6, -1.5,
-     -1.0,  0.6, -1.5,
-      1.0,  0.6, -1.5,
-      1.0, -0.6, -1.5,
+      //Top Hexagon
+      5.0, -2.0, -0.5,    //5
+      5.0,  2.0, -0.5,
+      5.0,  1.0,  1.0,
+      5.0, -1.0,  1.0,
+      5.0,  -1,  -2,      //9
+      5.0, 1,  -2,        //10
 
-     -1.0,  1.5, -0.6,
-     -1.0,  1.5,  0.6,
-      1.0,  1.5,  0.6,
-      1.0,  1.5, -0.6,
+      //My sides xD
+      //Corner piece
+      5.0, -2.0, -0.5,    //11
+      5.0, -1, -2,        //12
+      4.0, -2.0, -1,      //13
+      4.0, -2.0, -1,      //14
 
-     -1.0, -1.5, -0.6,
-      1.0, -1.5, -0.6,
-      1.0, -1.5,  0.6,
-     -1.0, -1.5,  0.6,
+      //Normal faces
+      5.0,  1.0,  1.0,
+      5.0, -1.0,  1.0,
+      1.0,  1.0,  1.0,
+      1.0, -1.0,  1.0,    //18
 
-     //Bottom ( ͡° ͜ʖ ͡°)
-      1, 0.6, -1.5,   //16
-      1,  1.5, -0.6,
-      1,  1.5,  0.6,
-      1, 0.6,  1.5,
-      1, -0.6, 1.5,   //20
-      1, -1.5, 0.6,
-      1, -1.5, -0.6,
-      1, -0.6, -1.5,  //23
+      1.0,  2.0, -1.0,
+      1.0,  1.0,  1.0,
+      5.0,  2.0, -0.5,
+      5.0,  1.0,  1.0,    //22
 
-      //More Sides
-      -1.0, 0.6,  1.5, //24
-       1.0, 0.6,  1.5,
-       1.0,  1.5,  0.6,
-      -1.0,  1.5,  0.6,
+      1.0, -2.0, -1.0,
+      1.0, -1.0,  1.0,
+      5.0, -2.0, -0.5,
+      5.0, -1.0,  1.0,    //26
 
-      -1.0, 0.6, -1.5,
-      -1.0,  1.5, -0.6,
-       1.0,  1.5, -0.6,
-       1.0, 0.6, -1.5,
+      1.0,  2.0, -1.0,
+      1.0, 0.0,  -2.0,
+      5.0,  2.0, -0.5,
+      5.0, 1.0,  -2.0, //30
 
-      -1.0,  -1.5, -0.6,
-      -1.0,  1.5,  -1.5,
-       1.0,  1.5,  -1.5,
-       1.0,  -1.5, -0.6,
+      4.0, -2.0, -1,
+      1.0, -2.0, -1.0,
+      1.0, 0,  -2,
+      5.0,  -1,  -2,  //34
 
-      -1.0, -1.5, -0.6,
-       1.0, -1.5, -0.6,
-       1.0, -1.5,  0.6,
-      -1.0, -1.5,  0.6,
+      5.0,  -1,  -2,
+      5.0, 1,  -2,
+      1.0, 0,  -2,
+      1.0, 0,  -2,    //38
      ];
 
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
@@ -509,12 +513,11 @@ function createScutoid(gl, translation, rotationAxis){
   var colorBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
   var faceColors = [
-      [1.0, 0.0, 0.0, 1.0], // Front face
       [0.0, 1.0, 0.0, 1.0], // Back face
+      [0.0, 1.0, 1.0, 1.0], // Back face
       [0.0, 0.0, 1.0, 1.0], // Top face
+      [1.0, 0.0, 0.0, 1.0], // Bottom face
       [1.0, 1.0, 0.0, 1.0], // Bottom face
-      [1.0, 0.0, 1.0, 1.0], // Right face
-      [0.0, 1.0, 1.0, 1.0]  // Left face
   ];
 
   // Each vertex must have the color information, that is why the same color is concatenated 4 times, one for each vertex of the pyramid's face.
@@ -525,6 +528,15 @@ function createScutoid(gl, translation, rotationAxis){
   //     for (var j=0; j < 4; j++)
   //         vertexColors = vertexColors.concat(color);
   // }
+  //Pentagon face
+  for (var j=0; j < 5; j++)
+    vertexColors = vertexColors.concat([1.0, 0.3, 0.6, 1.0]);
+
+  //Hexagon face
+    for (var j=0; j < 6; j++)
+      vertexColors = vertexColors.concat([1.0, 1.0, 0.4, 1.0]);
+
+
   for (const color of faceColors)
   {
       for (var j=0; j < 4; j++)
@@ -534,35 +546,43 @@ function createScutoid(gl, translation, rotationAxis){
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexColors), gl.STATIC_DRAW);
 
   // Index data (defines the triangles to be drawn).
-  var pyramidIndexBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, pyramidIndexBuffer);
-  var pyramidIndices = [
-      0, 1, 2,      0, 2, 3,    // Front face
-      4, 5, 6,      4, 6, 7,    // Back face
-      8, 9, 10,     8, 10, 11,  // Top face
-      12, 13, 14,   12, 14, 15, // Bottom face
-      16, 17, 20,   17, 18, 21, // Right face
-      18, 19, 22,   19, 20, 23,
-      20, 21, 16,   21, 22, 17,
-      22, 23, 18,   23, 16, 19,
-      24, 25, 26,      24, 26, 27,    // Front face
-      28, 29, 30,      28, 30, 31,    // Back face
-      32, 33, 34,     32, 34, 35,  // Top face
-      36, 37, 38,     36, 38, 39, // Bottom face
+  var scutoidIndexBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, scutoidIndexBuffer);
+  var scutoidIndices = [
+    //Pentagon
+      0, 1, 2,      0, 1, 3,    // Front face
+      0, 1, 4,      2, 0, 3,    // Back face
+
+      //Hexagon
+      7, 6, 10,     8, 5, 9,
+      8, 7, 9,      7, 9, 10,
+
+      //Faces
+      15, 16, 17,      16, 17, 18,
+
+      //Small triangle
+      12, 13, 11,
+
+      //Sides
+      19, 20, 22,    21, 22, 19,
+      23, 24, 25,   25, 26, 24,
+      27, 28, 29,   29, 30, 28,
+      31, 32, 33,   34, 33, 31,
+      35, 36, 37
   ];
 
   // gl.ELEMENT_ARRAY_BUFFER: Buffer used for element indices.
   // Uint16Array: Array of 16-bit unsigned integers.
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(pyramidIndices), gl.STATIC_DRAW);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(scutoidIndices), gl.STATIC_DRAW);
 
-  var pyramid = {
-          buffer:vertexBuffer, colorBuffer:colorBuffer, indices:pyramidIndexBuffer,
-          vertSize:3, nVerts:26, colorSize:4, nColors: 20, nIndices:72,
+  var scutoid = {
+          buffer:vertexBuffer, colorBuffer:colorBuffer, indices:scutoidIndexBuffer,
+          vertSize:3, nVerts:26, colorSize:4, nColors: 42, nIndices:60,
           primtype:gl.TRIANGLES, modelViewMatrix: mat4.create(), currentTime : Date.now()};
 
-  mat4.translate(pyramid.modelViewMatrix, pyramid.modelViewMatrix, translation);
-  var i = 0;
-  pyramid.update = function()
+  mat4.translate(scutoid.modelViewMatrix, scutoid.modelViewMatrix, translation);
+
+  scutoid.update = function()
   {
       var now = Date.now();
       var deltat = now - this.currentTime;
@@ -576,22 +596,9 @@ function createScutoid(gl, translation, rotationAxis){
       // Number rad the angle to rotate the matrix by
       // vec3 axis the axis to rotate around
       mat4.rotate(this.modelViewMatrix, this.modelViewMatrix, angle, rotationAxis);
-
-
-      //When i is less than 30, it goes down.  Otherwise it goes up.  At 59 it resets
-      if(i < 30){
-        mat4.translate(pyramid.modelViewMatrix, pyramid.modelViewMatrix, [0, -.1, 0]);
-      } else {
-        mat4.translate(pyramid.modelViewMatrix, pyramid.modelViewMatrix, [0, .1, 0]);
-      }
-      i++;
-      if (i > 59) {
-        i = 0;
-      }
-
   };
 
-  return pyramid;
+  return scutoid;
 }
 
 function createShader(gl, str, type)
