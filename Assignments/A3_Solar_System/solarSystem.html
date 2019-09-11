@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Cool Solar System</title>
+  <script src="../libs/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+  <script src="../libs/jquery-ui/jquery-ui.js"></script>
+  <script src="../libs/three.js/three.js"></script>
+  <script src="../libs/colorpicker/js/colorpicker.js"></script>
+  <script src="../libs/three.js/controls/OrbitControls.js"></script>
+
+  <script src="solarSystem.js"></script>
+  <script src="sceneHandler.js"></script>
+
+  <script type="text/javascript">
+    $(document).ready(
+  			function() {
+
+  				var canvas = document.getElementById("webglcanvas");
+
+  				// create the scene
+  				createScene(canvas);
+
+  				// add mouse handling so we can rotate the scene
+  				addMouseHandler(canvas);
+
+		        // Run the run loop
+		        run();
+  			}
+  	);
+
+  </script>
+</head>
+<body style="font-family:'Trebuchet MS', Helvetica, sans-serif">
+  <canvas id="webglcanvas" width=1000 height=600></canvas>
+  <h1>Some clarifications</h1>
+  <ul>
+    <li>The sizes of the planets are proportional to each other</li>
+    <li>The orbital speeds and rotational speeds of the planets are proportional to each other</li>
+    <li>The orbital speeds and rotational speeds are not on the same scale (1 earth orbit != 365 earth rotations)</li>
+    <li>The sun's size is proportional to nothing, it's just bigger than everything else</li>
+    <li>Distances from the sun are abritrary</li>
+    <li>Uranus and Venus rotate on their axis clockwise, unlike the other planets</li>
+    <li>For the sake of visibility, Mars' moons are larger than they should be</li>
+    <li>The moon's orbit speeds are proportional to each other but to nothing else</li>
+    <li>Jupiter, <strike>your-anus</strike> Uranus, Neptune, and Pluto have a few of moons each, only big moons (d > 1000km) are included here though</li>
+    <li>If your screen is really dusty, it looks like there are stars too</li>
+    <li>The speed of rotation of the moons on their own axis is arbitrary, the orbital rotation speed is proportional though</li>
+  </ul>
+</body>
+</html>
