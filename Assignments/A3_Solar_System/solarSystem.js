@@ -9,9 +9,11 @@ root = null,
 group = null,
 sphere = null,
 sphereTextured = null;
+asteroidsGroup = null;
 
 //Space object global declaration
 var spaceObjects = [];
+var asteroid;
 
 var duration = 10000; // ms
 var currentTime = Date.now();
@@ -68,6 +70,9 @@ function animate()
     for (var i = 0; i < spaceObjects.length; i++) {
       spaceObjects[i].geometry.rotateY(spaceObjects[i].axisRotation * (1 + (-2 * spaceObjects[i].counter)));
     }
+
+    //Asteroid rotation
+    asteroidsGroup.rotateY(-.01);
 }
 
 function run()
@@ -261,11 +266,11 @@ function createScene(canvas) {
     light.position.set(0, 0, 0);
     root.add( light );
     // Add a directional light to show off the object
-    /*var light = new THREE.DirectionalLight( 0xffffff, 2);
+    var light = new THREE.DirectionalLight( 0xffffff, 2);
 
     // Position the light out from the scene, pointing at the origin
     light.position.set(.5, 0, 1);
-    root.add( light );*/
+    root.add( light );
 
     // Create a group to hold the spheres
     group = new THREE.Object3D;
@@ -314,7 +319,7 @@ function createScene(canvas) {
 
     //Gotta space these big boys out a bit more
     //Jupiter
-    jupiter = new spaceObject(1.1, 20, 20, "jupiter", 8.5, 0, 0, .027, .084, 0);
+    jupiter = new spaceObject(1.1, 20, 20, "jupiter", 10.5, 0, 0, .027, .084, 0);
     group.add(jupiter.sphere);
     group.add(jupiter.torus);
 
@@ -328,7 +333,7 @@ function createScene(canvas) {
     jupiter.sphere.add(europa.sphere);
 
     //Saturn
-    saturn = new spaceObject(.91, 20, 20, "saturn", 12.5, 0, 0, .024, .033, 0);
+    saturn = new spaceObject(.91, 20, 20, "saturn", 14.5, 0, 0, .024, .033, 0);
     group.add(saturn.sphere);
     group.add(saturn.torus);
 
@@ -336,14 +341,14 @@ function createScene(canvas) {
     var geometryT = new THREE.TorusGeometry(1.5, 0.2, 2, 100 );
     saturnRingMap = new THREE.TextureLoader().load("../images/saturnringmap.png");
     saturnRingTransparencyMap = new THREE.TextureLoader().load("../images/saturnringtransparency.gif");
-    var materialT = new THREE.MeshBasicMaterial({ map: saturnRingMap, alphaMap: saturnRingTransparencyMap});
+    var materialT = new THREE.MeshPhongMaterial({ map: saturnRingMap, alphaMap: saturnRingTransparencyMap});
     torus = new THREE.Mesh( geometryT, materialT );
     torus.rotateX(Math.PI/2);
     torus.rotateZ(10);
     saturn.sphere.add(torus);
 
     //Uranus
-    uranus = new spaceObject(.39, 20, 20, "uranus", 15.5, 0, 0, .014, .012, 1);
+    uranus = new spaceObject(.39, 20, 20, "uranus", 17.5, 0, 0, .014, .012, 1);
     group.add(uranus.sphere);
     group.add(uranus.torus);
 
@@ -357,7 +362,7 @@ function createScene(canvas) {
     uranus.sphere.add(ariel.sphere);
 
     //Neptune
-    neptune = new spaceObject(.39, 20, 20, "neptune", 17.5, 0, 0, .015, .006, 0);
+    neptune = new spaceObject(.39, 20, 20, "neptune", 19.5, 0, 0, .015, .006, 0);
     group.add(neptune.sphere);
     group.add(neptune.torus);
 
@@ -365,12 +370,57 @@ function createScene(canvas) {
     neptune.sphere.add(triton.sphere);
 
     //Pluto
-    pluto = new spaceObject(.019, 20, 20, "pluto", 18.5, 0, 0, 0.0016, .004, 0);
+    pluto = new spaceObject(.019, 20, 20, "pluto", 20.5, 0, 0, 0.0016, .004, 0);
     group.add(pluto.sphere);
     group.add(pluto.torus);
 
     charon = new spaceObject(.0097, 20, 20, "charon", .1, 0, 0, 1, 5.63, 1);
     pluto.sphere.add(charon.sphere);
+
+    //Asteroid belt
+
+
+    var loader = new THREE.OBJLoader();
+    // load a resource
+    loader.load(
+    	// resource URL
+    	'../objects/asteroid.obj',
+    	// called when resource is loaded
+    	function ( object ) {
+        asteroid = object;
+        asteroid.scale.set(.01, .01, .01);
+
+        asteroid.speed = .5;
+        asteroid.initX = 7.5;
+        asteroid.axisRotation = .05;
+
+        var asteroidNumber = 90;
+        var randomDistance;
+
+        asteroidsGroup = new THREE.Object3D;
+        //asteroids.push(asteroid.clone());
+        asteroids2 = asteroid.clone();
+
+        for(var i = 0; i < asteroidNumber; i++){
+          asteroids2 = asteroid.clone();
+          randomDistance = Math.random() + 7;
+          asteroids2.speed = Math.random() / 2;
+          asteroids2.axisRotation = .05;
+          asteroids2.position.set(Math.sin( i/asteroidNumber*2*Math.PI)*randomDistance, .5-Math.random(), Math.cos( i/asteroidNumber*2*Math.PI)*randomDistance);
+          //scene.add(asteroids2);
+          asteroidsGroup.add(asteroids2);
+        }
+
+        scene.add(asteroidsGroup);
+    	},
+    	// called when loading is in progresses
+    	function ( xhr ) {
+    	},
+    	// called when loading has errors
+    	function ( error ) {
+    		console.log( 'An error happened' );
+    	}
+    );
 
     //Any object not in this array won't spin
     spaceObjects = [sun, mercury, venus, earth, mars, jupiter, saturn, uranus, neptune, pluto, moon, deimos, phobos, ganymede, callisto, io, europa, titania, oberon, umbriel, ariel, triton, charon];
@@ -378,44 +428,6 @@ function createScene(canvas) {
     // Now add the group to our scene
     scene.add( root );
 }
-
-/*function createSun(){
-  // Add a directional light to show off the object
-  //var light = new THREE.DirectionalLight( 0xffffff, 2);
-
-  // Position the light out from the scene, pointing at the origin
-  //light.position.set(.5, 0, 1);
-  //root.add( light );
-
-  //light = new THREE.AmbientLight ( 0 ); // 0x222222 );
-  //root.add(light);
-
-  // Create a group to hold the spheres
-  group = new THREE.Object3D;
-  root.add(group);
-
-  // Create all the materials
-  createMaterials();
-
-  // Create the sphere geometry
-  geometry = new THREE.SphereGeometry(1, 20, 20);
-
-  // And put the geometry and material together into a mesh
-  sphere = new THREE.Mesh(geometry, materials["phong"]);
-  sphere.visible = false;
-
-  // Create the sphere geometry
-  geometry = new THREE.SphereGeometry(1, 20, 20);
-
-  // And put the geometry and material together into a mesh
-  sphereTextured = new THREE.Mesh(geometry, materials["phong-textured"]);
-  sphereTextured.visible = true;
-  setMaterial("phong-textured");
-
-  // Add the sphere mesh to our group
-  group.add( sphere );
-  group.add( sphereTextured );
-}*/
 
 function rotateScene(deltax)
 {
