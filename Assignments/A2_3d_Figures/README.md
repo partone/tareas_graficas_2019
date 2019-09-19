@@ -22,3 +22,10 @@ Rubric:
 
 <img src="Images/Octahedron.jpg" width="300">
 <br/>Figure 3: 3D Octahedron.
+
+**Notas**
+
+- Faltó la pirámide y el escutoide. 
+- Aunque veo que pusiste la geometría de la pirámide y del escutoide, hizo falta ajustar los valores de las propiedades del objeto que regresas en cada caso para que los índices coincidan y se puedan dibujar correctamente.
+
+**Calificación: 70**

@@ -118,7 +118,7 @@ function createPyramid(gl, translation, rotationAxis){
       [0.0, 0.0, 1.0, 1.0], // Top face
       [1.0, 1.0, 0.0, 1.0], // Bottom face
       [1.0, 0.0, 1.0, 1.0], // Right face
-      [0.0, 1.0, 1.0, 1.0]  // Left face
+    //   [0.0, 1.0, 1.0, 1.0]  // Left face
   ];
 
   // Each vertex must have the color information, that is why the same color is concatenated 4 times, one for each vertex of the pyramid's face.
@@ -416,13 +416,19 @@ function createPentPyramid(gl, translation, rotationAxis){
       25, 26, 27,   25, 27, 28, // Right face
   ];
 
+  var pyramidIndices = [];
+  for (i=0; i<25; i++)
+  {
+      pyramidIndices.push(i);
+  }
+  
   // gl.ELEMENT_ARRAY_BUFFER: Buffer used for element indices.
   // Uint16Array: Array of 16-bit unsigned integers.
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(pyramidIndices), gl.STATIC_DRAW);
 
   var pyramid = {
           buffer:vertexBuffer, colorBuffer:colorBuffer, indices:pyramidIndexBuffer,
-          vertSize:3, nVerts:26, colorSize:4, nColors: 42, nIndices:48,
+          vertSize:3, nVerts:25, colorSize:4, nColors: 25, nIndices:48,
           primtype:gl.TRIANGLES, modelViewMatrix: mat4.create(), currentTime : Date.now()};
 
   mat4.translate(pyramid.modelViewMatrix, pyramid.modelViewMatrix, translation);
