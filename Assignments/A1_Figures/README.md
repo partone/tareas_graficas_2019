@@ -11,3 +11,5 @@ Rubric:
 2. Vertex data was created, and the correct information for each object was added.
 3. Correct transformations were performed for each figure.
 4. The figures were rendered as in the Figure.
+
+**Calificación: 100**

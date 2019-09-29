@@ -15,3 +15,11 @@ Assignment No 3 for the computer graphics course. Using three.js, create a solar
 - The panning and rotation of the system has to be controlled using an orbit controller.
 
 **Deadline:** 19/09/12 23:59 hrs
+
+**Notas**
+
+- Faltó subir la carpeta con las imágenes.
+- Extra por cargar el obj de los asteroides.
+- Hay un "ligero" error con los asteroides: usas el grupo antes de que el obj loader termine de cargarlos. El error se quita eventualmente cuando los objs se terminan de cargar y el grupo  se crea.
+
+**Calificación: 110**
