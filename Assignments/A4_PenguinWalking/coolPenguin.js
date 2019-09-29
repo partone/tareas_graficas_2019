@@ -1,7 +1,7 @@
-// 1. Enable shadow mapping in the renderer.
-// 2. Enable shadows and set shadow parameters for the lights that cast shadows.
-// Both the THREE.DirectionalLight type and the THREE.SpotLight type support shadows.
-// 3. Indicate which geometry objects cast and receive shadows.
+/*
+Eric Parton
+A01023503
+*/
 
 var renderer = null,
 scene = null,
@@ -11,10 +11,12 @@ ring = null,
 penguin = null,
 group = null,
 orbitControls = null;
+crateAnimator = null;
+animatePenguin = true;
+loopAnimation = true;
 
 var objLoader = null, jsonLoader = null;
 
-var duration = 20000; // ms
 var currentTime = Date.now();
 
 function loadObj()
@@ -43,8 +45,9 @@ function loadObj()
                 }
             } );
 
-            penguin = object;
-            penguin.scale.set(1,.5,1.5);
+            penguin  = object;
+            penguin.scale.set(1, .5,1);   //Give the penguin bigger bones
+            penguin.position.y = -4;
             scene.add(object);
         },
         function ( xhr ) {
@@ -60,45 +63,24 @@ function loadObj()
         });
 }
 
-function animate() {
-
-    var now = Date.now();
-    var deltat = now - currentTime;
-    currentTime = now;
-    var fract = deltat / duration;
-    var angle = Math.PI * 2 * fract;
-
-    if(penguin)
-        penguin.rotation.y += angle / 2;
-}
-
 function run() {
     requestAnimationFrame(function() { run(); });
 
         // Render the scene
         renderer.render( scene, camera );
 
-        // Spin the cube for next frame
-        animate();
+        // Update the animations
+        KF.update();
 
         // Update the camera controller
         orbitControls.update();
-}
-
-function setLightColor(light, r, g, b)
-{
-    r /= 255;
-    g /= 255;
-    b /= 255;
-
-    light.color.setRGB(r, g, b);
 }
 
 var directionalLight = null;
 var spotLight = null;
 var ambientLight = null;
 var pointLight = null;
-var mapUrl = "../images/cashew.jpg";
+var mapUrl = "../images/cashew.jpg";    //Yummy yummy
 
 var SHADOW_MAP_WIDTH = 3048, SHADOW_MAP_HEIGHT = 3048;
 
@@ -120,24 +102,16 @@ function createScene(canvas) {
 
     // Add  a camera so we can view the scene
     camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
-    camera.position.set(-10, 16, 12);
+    camera.position.set(-100, 160, 120);
     scene.add(camera);
 
     // Create a group to hold all the objects
     root = new THREE.Object3D;
 
-    // Add a directional light to show off the object
-    directionalLight = new THREE.DirectionalLight( 0xffffff, 1);
-
-    // Create and add all the lights
-    directionalLight.position.set(.5, 1, -3);
-    directionalLight.target.position.set(0,0,0);
-    directionalLight.castShadow = true;
-    root.add(directionalLight);
-
-    spotLight = new THREE.SpotLight (0xffffff);
-    spotLight.position.set(2, 8, 15);
-    spotLight.target.position.set(-2, 0, -2);
+    //Cool spotlight to make the penguin feel special
+    spotLight = new THREE.SpotLight (0xffffff, 1.5, 350);
+    spotLight.position.set(0, 45, 0);         //Position in the sky
+    spotLight.target.position.set(0, 0, 0);   //Point towards the ground
     root.add(spotLight);
 
     spotLight.castShadow = true;
@@ -149,29 +123,18 @@ function createScene(canvas) {
     spotLight.shadow.mapSize.width = SHADOW_MAP_WIDTH;
     spotLight.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
 
-    ambientLight = new THREE.AmbientLight ( 0xffffff, 0.4);
+    //Standar ambient light
+    ambientLight = new THREE.AmbientLight ( 0xffffff, .8);
     root.add(ambientLight);
-
-    pointLight = new THREE.PointLight(0xffffff, 0.8, 0);
-    pointLight.position.set(0,1.5,15);
-
-    pointLight.castShadow = true;
-
-    pointLight.shadow.camera.near = 1;
-    pointLight.shadow.camera.far = 200;
-    pointLight.shadow.camera.fov = 45;
-
-    pointLight.shadow.mapSize.width = SHADOW_MAP_WIDTH;
-    pointLight.shadow.mapSize.height = SHADOW_MAP_HEIGHT;
-
-    var pointLightHelper = new THREE.PointLightHelper( pointLight, 1.1 );
-    // root.add(pointLight);
-    // root.add(pointLightHelper);
-    // Create the objects
-    loadObj();
 
     // Create a group to hold the objects
     group = new THREE.Object3D;
+
+
+    // Create the objects
+    loadObj();
+
+
     root.add(group);
 
     // Create a texture map
@@ -195,5 +158,177 @@ function createScene(canvas) {
 
     // Now add the group to our scene
     scene.add( root );
-    // scene.add( asteroid );
+}
+
+//Play playAnimations
+function playAnimations()
+{
+    // position animation
+    if (crateAnimator)
+        crateAnimator.stop();
+
+    penguin.position.set(0, -4, 0);
+    penguin.rotation.set(0, 0, 0);
+
+    if (animatePenguin)
+    {
+        crateAnimator = new KF.KeyFrameAnimator;
+        crateAnimator.init({
+            interps:
+                [
+                  //Figure 8 movement
+                  {
+                      keys:[0/36, 1/36, 2/36, 3/36, 4/36, 5/36,
+                        6/36, 7/36, 8/36, 9/36, 10/36,
+                        11/36, 12/36, 13/36, 14/36, 15/36,
+                        16/36, 17/36, 18/36, 19/36, 20/36,
+                        21/36, 22/36, 23/36, 24/36, 25/36,
+                        26/36, 27/36, 28/36, 29/36, 30/36,
+                        31/36, 32/36, 33/36, 34/36, 35/36, 36/36,
+                      ],
+                      values:[
+                              { x : 0,      z:0,        y: -4 },  //1
+                              { x : 2*4,    z:2*4,      y: -4 },
+                              { x : 2*8,    z:2*7,      y: -4 },
+                              { x : 2*12,   z:2*9,      y: -4 },
+                              { x : 2*16,   z:2*10,     y: -4 },  //5
+                              { x : 2*20,   z:2*9.6,    y: -4 },
+                              { x : 2*22.5, z:2*8.25,   y: -4 },
+                              { x : 2*25,   z:2*7,      y: -4 },
+                              { x : 2*27,   z:2*4.8,    y: -4 },
+                              { x : 2*28.5, z:0,        y: -4 },  //10, apex
+                              { x : 2*27,   z:2*-4.8,   y: -4 },
+                              { x : 2*25,   z:2*-7,     y: -4 },
+                              { x : 2*22.5, z:2*-8.25,  y: -4 },
+                              { x : 2*20,   z:2*-9.6,   y: -4 },
+                              { x : 2*16,   z:2*-10,    y: -4 },  //15
+                              { x : 2*12,   z:2*-9,     y: -4 },
+                              { x : 2*8,    z:2*-7,     y: -4 },
+                              { x : 2*4,    z:2*-4,     y: -4 },
+                              { x : 0,      z:0,        y: -4 },  //At middle again
+                              { x : 2*-4,   z:2*4,      y: -4 },  //20
+                              { x : 2*-8,   z:2*7,      y: -4 },
+                              { x : 2*-12,  z:2*9,      y: -4 },
+                              { x : 2*-16,  z:2*10,     y: -4 },
+                              { x : 2*-20,  z:2*9.6,    y: -4 },
+                              { x : 2*-22.5,z:2*8.25,   y: -4 },  //25
+                              { x : 2*-25,  z:2*7,      y: -4 },
+                              { x : 2*-27,  z:2*4.8,    y: -4 },
+                              { x : 2*-28.5,z:0,        y: -4 },  //apex
+                              { x : 2*-27,  z:2*-4.8,   y: -4 },
+                              { x : 2*-25,  z:2*-7,     y: -4 },  //30
+                              { x : 2*-22.5,z:2*-8.25,  y: -4 },
+                              { x : 2*-20,  z:2*-9.6,   y: -4 },
+                              { x : 2*-16,  z:2*-10,    y: -4 },
+                              { x : 2*-12,  z:2*-9,     y: -4 },
+                              { x : 2*-8,   z:2*-7,     y: -4 },  //35
+                              { x : 2*-4,   z:2*-4,     y: -4 },
+                              { x : 0,      z:0,        y: -4 },  //37, back at middle
+                              ],
+                      target:penguin.position
+                  },
+                  //Left/right gait
+                    {     //Mid   left  mid   right
+                      keys:[0/72, 1/72, 2/72, 3/72,
+                            4/72, 5/72, 6/72, 7/72,
+                            8/72, 9/72, 10/72,11/72,
+                            12/72, 13/72, 14/72, 15/72,
+                            16/72, 17/72, 18/72, 19/72,
+                            20/72, 21/72, 22/72, 23/72,
+                            24/72, 25/72, 26/72, 27/72,
+                            28/72, 29/72, 30/72, 31/72,
+                            32/72, 33/72, 34/72, 35/72,
+                            36/72, 37/72, 38/72, 39/72,
+                            40/72, 41/72, 42/72, 43/72,
+                            44/72, 45/72, 46/72, 47/72,
+                            48/72, 49/72, 50/72, 51/72,
+                            52/72, 53/72, 54/72, 55/72,
+                            56/72, 57/72, 58/72, 59/72,
+                            60/72, 61/72, 62/72, 63/72,
+                            64/72, 65/72, 66/72, 67/72,
+                            68/72, 69/72, 70/72, 71/72, 72/72,
+                      ],
+                        values:[
+                              //Middle    Left       Middle    Right
+                                { z : 0}, { z : -.1}, { z : 0}, { z : .1},
+                                { z : 0}, { z : -.1}, { z : 0}, { z : .1},
+                                { z : 0}, { z : -.1}, { z : 0}, { z : .1},
+                                { z : 0}, { z : -.1}, { z : 0}, { z : .1},
+                                { z : 0}, { z : -.1}, { z : 0}, { z : .1},
+                                { z : 0}, { z : -.1}, { z : 0}, { z : .1},
+                                { z : 0}, { z : -.1}, { z : 0}, { z : .1},
+                                { z : 0}, { z : -.1}, { z : 0}, { z : .1},
+                                { z : 0}, { z : -.1}, { z : 0}, { z : .1},
+                                { z : 0}, { z : -.1}, { z : 0}, { z : .1},
+                                { z : 0}, { z : -.1}, { z : 0}, { z : .1},
+                                { z : 0}, { z : -.1}, { z : 0}, { z : .1},
+                                { z : 0}, { z : -.1}, { z : 0}, { z : .1},
+                                { z : 0}, { z : -.1}, { z : 0}, { z : .1},
+                                { z : 0}, { z : -.1}, { z : 0}, { z : .1},
+                                { z : 0}, { z : -.1}, { z : 0}, { z : .1},
+                                { z : 0}, { z : -.1}, { z : 0}, { z : .1},
+                                { z : 0}, { z : -.1}, { z : 0}, { z : .1},
+                                {z : 0},
+                                ],
+                        target:penguin.rotation
+                    },
+                    //Left/right gait
+                      {     //Mid   left  mid   right
+                        keys:[0/36, 1/36, 2/36, 3/36, 4/36, 5/36,
+                          6/36, 7/36, 8/36, 9/36, 10/36,
+                          11/36, 12/36, 13/36, 14/36, 15/36,
+                          16/36, 17/36, 18/36, 19/36, 20/36,
+                          21/36, 22/36, 23/36, 24/36, 25/36,
+                          26/36, 27/36, 28/36, 29/36, 30/36,
+                          31/36, 32/36, 33/36, 34/36, 35/36, 36/36,
+                        ],
+                          values:[
+                                  { y : Math.PI/4},   //1
+                                  { y : Math.PI/4},
+                                  { y : Math.PI/3.5},
+                                  { y : Math.PI/2.7},
+                                  { y : Math.PI/2},   //5
+                                  { y : Math.PI/1.7},
+                                  { y : Math.PI/1.5},
+                                  { y : Math.PI/1.5},
+                                  { y : Math.PI/1.2},
+                                  { y : Math.PI},      //10, peak
+                                  { y : 7*Math.PI/6},
+                                  { y : 5*Math.PI/4},
+                                  { y : 4*Math.PI/3},
+                                  { y : 3*Math.PI/2},
+                                  { y : 3*Math.PI/2},   //15
+                                  { y : 5*Math.PI/3},
+                                  { y : 6*Math.PI/3.5},
+                                  { y : 7*Math.PI/4},   //At the middle again
+                                  { y : -Math.PI/4 + (2*Math.PI)},
+                                  { y : -Math.PI/4 + (2*Math.PI)},
+                                  { y : -Math.PI/3.5 + (2*Math.PI)},
+                                  { y : -Math.PI/2.7 + (2*Math.PI)},
+                                  { y : -Math.PI/2 + (2*Math.PI)},
+                                  { y : -Math.PI/1.7 + (2*Math.PI)},
+                                  { y : -Math.PI/1.5 + (2*Math.PI)},
+                                  { y : -Math.PI/1.5 + (2*Math.PI)},
+                                  { y : -Math.PI/1.2 + (2*Math.PI)},
+                                  { y : -Math.PI + (2*Math.PI)},      //Peak again
+                                  { y : -7*Math.PI/6 + (2*Math.PI)},
+                                  { y : -5*Math.PI/4 + (2*Math.PI)},
+                                  { y : -4*Math.PI/3 + (2*Math.PI)},
+                                  { y : -3*Math.PI/2 + (2*Math.PI)},
+                                  { y : -3*Math.PI/2 + (2*Math.PI)},
+                                  { y : -5*Math.PI/3 + (2*Math.PI)},
+                                  { y : -6*Math.PI/3.5 + (2*Math.PI)},
+                                  { y : -7*Math.PI/4 + (2*Math.PI)},
+                                  { y : Math.PI/4},
+                                  ],
+                          target:penguin.rotation
+                      },
+                ],
+            loop: loopAnimation,
+            duration:10001,   //10 second duration
+            //easing:TWEEN.Easing.Bounce.InOut,
+
+        });
+        crateAnimator.start();
+    }
 }
