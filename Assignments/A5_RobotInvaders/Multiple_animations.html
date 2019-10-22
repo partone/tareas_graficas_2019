@@ -1,0 +1,99 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Three.js Morph targets</title>
+
+<link rel="stylesheet" href="../libs/jquery-ui/jquery-ui.css" />
+<link rel="stylesheet" href="../libs/colorpicker/css/colorpicker.css" />
+<link rel="stylesheet" href="../css/main.css" />
+<link rel="stylesheet" href="../css/threejsshadows.css" />
+
+<script src="../libs/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+<script src="../libs/jquery-ui/jquery-ui.js"></script>
+
+<script src="../libs/three.js/three.js"></script>
+<script src="../libs/three.js/controls/OrbitControls.js"></script>
+<script src="../libs/colorpicker/js/colorpicker.js"></script>
+
+<script src="../libs/three.js/loaders/GLTFLoader.js"></script>
+
+<script src="../libs/three.js/loaders/OBJLoader.js"></script>
+<script src="../libs/three.js/loaders/MTLLoader.js"></script>
+
+<script src="../libs/three.js/loaders/inflate.min.js"></script>
+<script src="../libs/three.js/loaders/FBXLoader.js"></script>
+<script src="../libs/three.js/utils/cloneFBX.js"></script>
+
+<script src="../libs/keyframe.js/keyframe.js"></script>
+
+<script src="../libs/three.js/loaders/OBJLoader.js"></script>
+
+<script src="Multiple_animations.js"></script>
+
+<script type="text/javascript">
+
+
+
+function initControls()
+{
+    $("input[name=animation]").click(
+        function() {
+            var id = $("input[name=animation]:checked").attr('value');
+            changeAnimation(id);
+        }
+    );
+}
+
+</script>
+
+<script type="text/javascript">
+
+	$(document).ready(
+			function() {
+
+        var audio = new Audio('../audio/communism.mp3');
+        audio.play();
+
+				var canvas = document.getElementById("webglcanvas");
+
+				// create the scene
+				createScene(canvas);
+
+				// initialize   the controls
+				initControls();
+
+        // Run the run loop
+        run();
+			}
+	);
+
+</script>
+
+</head>
+
+<body style="margin: 0">
+
+<div id="container">
+    <canvas id="webglcanvas" width=800 height=600></canvas>
+</div>
+
+<div id="animations" style = "background-color:white; padding:10px; color:#333; position:absolute;left:0;top:0;display:flex;flex-wrap:wrap;">
+	<div style="width:50%;">Timer:</div><div style="width:50%;" id="health">0</div>
+  <div style="width:50%;">Score:</div><div style="width:50%;" id="score">0</div>
+</div>
+
+<div id="gameover" onClick="window.location.reload();" style="display:none;font-weight:bold;position:fixed;left:0;width:100%;height:100vh;cursor:pointer;text-align:center;top:0;background-color:black;padding:60px;">
+  <div style="font-size:105px;">GAME OVER</div>
+  <div id="scoreFinal"></div>
+  <div>Play again?</div>
+</div>
+
+  <iframe src="../audio/silence.mp3" allow="autoplay" id="audio" style="display:none"></iframe>
+  <audio loop autoplay>
+    <source src="../audio/communism.mp3" type="audio/mp3">
+  </audio>
+
+</body>
+
+
+</html>
