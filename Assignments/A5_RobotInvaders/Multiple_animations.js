@@ -193,7 +193,9 @@ function animate() {
         //Reset if it reaches the goal
         if((robots[i].position.x <= 5 && robots[i].position.x >= -5) && (robots[i].position.z <= 5 && robots[i].position.z >= -5)) {
           //Lower score
-          score--;
+          if(health > 0) {
+            score--;
+          }
           $('#score').text(score);
           $('#health').text(health);
           if(health <= 0) {
